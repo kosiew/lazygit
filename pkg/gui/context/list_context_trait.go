@@ -30,7 +30,7 @@ func (self *ListContextTrait) IsListContext() {}
 func (self *ListContextTrait) FocusLine() {
 	self.Context.FocusLine()
 
-	preserveScroll := self.preserveScrollOnNextFocus && !self.c.Context().IsCurrent(self.Context)
+	preserveScroll := self.preserveScrollOnNextFocus
 	self.preserveScrollOnNextFocus = false
 
 	// Doing this at the end of the layout function because we need the view to be
