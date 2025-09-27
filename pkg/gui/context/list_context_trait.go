@@ -79,8 +79,24 @@ func (self *ListContextTrait) FocusLine() {
 			}
 		}
 		if shouldRestoreCursor {
-			view.SetCursor(oldCursorX, oldCursorY)
-			self.list.SetSelectedLineIdx(self.ViewIndexToModelIndex(oldOriginY + oldCursorY))
+			oldSelectedLineIdx := self.ViewIndexToModelIndex(oldOriginY + oldCursorY)
+			currentSelectedLineIdx := self.list.GetSelectedLineIdx()
+
+			if currentSelectedLineIdx == oldSelectedLineIdx {
+				view.SetCursor(oldCursorX, oldCursorY)
+				self.list.SetSelectedLineIdx(oldSelectedLineIdx)
+			} else if currentSelectedLineIdx >= 0 {
+				newCursorY := self.ModelIndexToViewIndex(currentSelectedLineIdx) - oldOriginY
+				if newCursorY < 0 {
+					newCursorY = 0
+				} else if _, viewHeight := view.Size(); viewHeight > 0 && newCursorY >= viewHeight {
+					newCursorY = viewHeight - 1
+				}
+
+				view.SetCursor(oldCursorX, newCursorY)
+			} else {
+				view.SetCursor(oldCursorX, oldCursorY)
+			}
 		}
 
 		return nil
