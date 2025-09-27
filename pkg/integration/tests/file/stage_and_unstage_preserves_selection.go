@@ -27,12 +27,22 @@ var StageAndUnstagePreservesSelection = NewIntegrationTest(NewIntegrationTestArg
 			NavigateToLine(Contains("file-15.txt")).
 			SelectedLine(Contains("?? file-15.txt"))
 
+		initialOrigin := filesView.OriginY()
+
 		filesView.
 			PressPrimaryAction().
 			SelectedLine(Contains("A  file-15.txt"))
 
+		if origin := filesView.OriginY(); origin != initialOrigin {
+			t.Fail(fmt.Sprintf("expected origin to remain %d after staging, got %d", initialOrigin, origin))
+		}
+
 		filesView.
 			PressPrimaryAction().
 			SelectedLine(Contains("?? file-15.txt"))
+
+		if origin := filesView.OriginY(); origin != initialOrigin {
+			t.Fail(fmt.Sprintf("expected origin to remain %d after unstaging, got %d", initialOrigin, origin))
+		}
 	},
 })

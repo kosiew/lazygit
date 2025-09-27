@@ -487,6 +487,7 @@ func (self *FilesController) press(nodes []*filetree.FileNode) error {
 
 	self.c.Refresh(types.RefreshOptions{Scope: []types.RefreshableView{types.FILES}, Mode: types.ASYNC})
 
+	self.context().SetPreserveScrollOnNextFocus(true)
 	self.context().HandleFocus(types.OnFocusOpts{})
 	return nil
 }
@@ -613,6 +614,7 @@ func (self *FilesController) toggleStagedAll() error {
 
 	self.c.Refresh(types.RefreshOptions{Scope: []types.RefreshableView{types.FILES}, Mode: types.ASYNC})
 
+	self.context().SetPreserveScrollOnNextFocus(true)
 	self.context().HandleFocus(types.OnFocusOpts{})
 	return nil
 }
