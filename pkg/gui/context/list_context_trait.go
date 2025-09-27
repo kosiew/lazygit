@@ -87,12 +87,17 @@ func (self *ListContextTrait) FocusLine() {
 				self.list.SetSelectedLineIdx(oldSelectedLineIdx)
 			} else if currentSelectedLineIdx >= 0 {
 				mappedViewIdx := self.ModelIndexToViewIndex(currentSelectedLineIdx)
-				_, viewHeight := view.Size()
-				if viewHeight > 0 && (mappedViewIdx < oldOriginY || mappedViewIdx >= oldOriginY+viewHeight) {
-					self.GetViewTrait().FocusPoint(mappedViewIdx)
-				} else {
-					newCursorY := mappedViewIdx - oldOriginY
+				newCursorY := mappedViewIdx - oldOriginY
+
+				if preserveScroll {
 					view.SetCursor(oldCursorX, newCursorY)
+				} else {
+					_, viewHeight := view.Size()
+					if viewHeight > 0 && (mappedViewIdx < oldOriginY || mappedViewIdx >= oldOriginY+viewHeight) {
+						self.GetViewTrait().FocusPoint(mappedViewIdx)
+					} else {
+						view.SetCursor(oldCursorX, newCursorY)
+					}
 				}
 			} else {
 				view.SetCursor(oldCursorX, oldCursorY)
