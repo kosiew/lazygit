@@ -119,9 +119,7 @@ func BuildFlatTreeFromFiles(files []*models.File, showRootItem bool) *Node[model
 	rootAux := BuildTreeFromFiles(files, showRootItem)
 	sortedFiles := rootAux.GetLeaves()
 
-	// from top down we have merge conflict files, then tracked file, then untracked
-	// files. This is the one way in which sorting differs between flat mode and
-	// tree mode
+	// ensure a deterministic ordering in flat mode that groups files by status
 	sort.SliceStable(sortedFiles, func(i, j int) bool {
 		iFile := sortedFiles[i].File
 		jFile := sortedFiles[j].File
@@ -131,23 +129,17 @@ func BuildFlatTreeFromFiles(files []*models.File, showRootItem bool) *Node[model
 			return false
 		}
 
-		if iFile.HasMergeConflicts && !jFile.HasMergeConflicts {
-			return true
+		if iFile.HasMergeConflicts != jFile.HasMergeConflicts {
+			return iFile.HasMergeConflicts && !jFile.HasMergeConflicts
 		}
 
-		if jFile.HasMergeConflicts && !iFile.HasMergeConflicts {
-			return false
+		iSection := fileSectionForFile(iFile)
+		jSection := fileSectionForFile(jFile)
+		if iSection != jSection {
+			return iSection < jSection
 		}
 
-		if iFile.Tracked && !jFile.Tracked {
-			return true
-		}
-
-		if jFile.Tracked && !iFile.Tracked {
-			return false
-		}
-
-		return false
+		return iFile.Path < jFile.Path
 	})
 
 	return &Node[models.File]{Children: sortedFiles}

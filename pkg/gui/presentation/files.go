@@ -28,7 +28,14 @@ func RenderFileTree(
 	showRootItem bool,
 ) []string {
 	collapsedPaths := tree.CollapsedPaths()
-	return renderAux(tree.GetRoot().Raw(), collapsedPaths, -1, -1, func(node *filetree.Node[models.File], treeDepth int, visualDepth int, isCollapsed bool) string {
+	root := tree.GetRoot().Raw()
+	if displayable, ok := tree.(filetree.DisplayableTree); ok {
+		if displayRoot := displayable.DisplayRoot(); displayRoot != nil {
+			root = displayRoot
+		}
+	}
+
+	return renderAux(root, collapsedPaths, -1, -1, func(node *filetree.Node[models.File], treeDepth int, visualDepth int, isCollapsed bool) string {
 		fileNode := filetree.NewFileNode(node)
 
 		return getFileLine(isCollapsed, fileNode.GetHasUnstagedChanges(), fileNode.GetHasStagedChanges(), treeDepth, visualDepth, showNumstat, showFileIcons, submoduleConfigs, node, customIconsConfig, showRootItem)

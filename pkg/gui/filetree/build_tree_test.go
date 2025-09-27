@@ -392,16 +392,8 @@ func TestBuildFlatTreeFromFiles(t *testing.T) {
 			},
 		},
 		{
-			name: "tracked, untracked, and conflicted files",
+			name: "merge conflicts, staged, unstaged, and untracked files",
 			files: []*models.File{
-				{
-					Path:    "a2",
-					Tracked: false,
-				},
-				{
-					Path:    "a1",
-					Tracked: false,
-				},
 				{
 					Path:              "c2",
 					HasMergeConflicts: true,
@@ -411,12 +403,32 @@ func TestBuildFlatTreeFromFiles(t *testing.T) {
 					HasMergeConflicts: true,
 				},
 				{
-					Path:    "b2",
-					Tracked: true,
+					Path:             "s2",
+					HasStagedChanges: true,
 				},
 				{
-					Path:    "b1",
-					Tracked: true,
+					Path:             "s1",
+					HasStagedChanges: true,
+				},
+				{
+					Path:               "u2",
+					HasUnstagedChanges: true,
+					Tracked:            true,
+				},
+				{
+					Path:               "u1",
+					HasUnstagedChanges: true,
+					Tracked:            true,
+				},
+				{
+					Path:               "n2",
+					HasUnstagedChanges: true,
+					Tracked:            false,
+				},
+				{
+					Path:               "n1",
+					HasUnstagedChanges: true,
+					Tracked:            false,
 				},
 			},
 			showRootItem: true,
@@ -432,20 +444,28 @@ func TestBuildFlatTreeFromFiles(t *testing.T) {
 						path: "./c2",
 					},
 					{
-						File: &models.File{Path: "b1", Tracked: true},
-						path: "./b1",
+						File: &models.File{Path: "s1", HasStagedChanges: true},
+						path: "./s1",
 					},
 					{
-						File: &models.File{Path: "b2", Tracked: true},
-						path: "./b2",
+						File: &models.File{Path: "s2", HasStagedChanges: true},
+						path: "./s2",
 					},
 					{
-						File: &models.File{Path: "a1", Tracked: false},
-						path: "./a1",
+						File: &models.File{Path: "u1", HasUnstagedChanges: true, Tracked: true},
+						path: "./u1",
 					},
 					{
-						File: &models.File{Path: "a2", Tracked: false},
-						path: "./a2",
+						File: &models.File{Path: "u2", HasUnstagedChanges: true, Tracked: true},
+						path: "./u2",
+					},
+					{
+						File: &models.File{Path: "n1", HasUnstagedChanges: true, Tracked: false},
+						path: "./n1",
+					},
+					{
+						File: &models.File{Path: "n2", HasUnstagedChanges: true, Tracked: false},
+						path: "./n2",
 					},
 				},
 			},

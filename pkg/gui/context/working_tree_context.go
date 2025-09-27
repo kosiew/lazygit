@@ -1,6 +1,9 @@
 package context
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/jesseduffield/gocui"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
@@ -37,6 +40,46 @@ func NewWorkingTreeContext(c *ContextCommon) *WorkingTreeContext {
 		})
 	}
 
+	getNonModelItems := func() []*NonModelItem {
+		sections := viewModel.GetSections()
+		if len(sections) == 0 {
+			return nil
+		}
+
+		labels := map[filetree.FileSectionKind]string{
+			filetree.FileSectionStaged:   c.Tr.StagedChanges,
+			filetree.FileSectionUnstaged: c.Tr.UnstagedChanges,
+		}
+
+		untrackedLabel := c.Tr.FilterUntrackedFiles
+		trimmed := strings.Trim(c.Tr.FilterLabelUntrackedFiles, "()（）")
+		if value := strings.TrimSpace(trimmed); value != "" {
+			untrackedLabel = value
+		}
+		labels[filetree.FileSectionUntracked] = untrackedLabel
+
+		items := []*NonModelItem{}
+		runningIndex := 0
+		for _, section := range sections {
+			count := len(section.Nodes)
+			if count == 0 {
+				continue
+			}
+
+			label, ok := labels[section.Kind]
+			if ok {
+				items = append(items, &NonModelItem{
+					Index:   runningIndex,
+					Content: fmt.Sprintf("--- %s ---", label),
+				})
+			}
+
+			runningIndex += count
+		}
+
+		return items
+	}
+
 	ctx := &WorkingTreeContext{
 		SearchTrait:       NewSearchTrait(c),
 		FileTreeViewModel: viewModel,
@@ -51,6 +94,7 @@ func NewWorkingTreeContext(c *ContextCommon) *WorkingTreeContext {
 			ListRenderer: ListRenderer{
 				list:              viewModel,
 				getDisplayStrings: getDisplayStrings,
+				getNonModelItems:  getNonModelItems,
 			},
 			c: c,
 		},
