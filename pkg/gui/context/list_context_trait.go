@@ -21,6 +21,8 @@ type ListContextTrait struct {
 	// If this is true, we only render the visible lines of the list. Useful for lists that can
 	// get very long, because it can save a lot of memory
 	renderOnlyVisibleLines bool
+
+	preserveScrollOnNextFocus bool
 }
 
 func (self *ListContextTrait) IsListContext() {}
@@ -28,12 +30,20 @@ func (self *ListContextTrait) IsListContext() {}
 func (self *ListContextTrait) FocusLine() {
 	self.Context.FocusLine()
 
+	preserveScroll := self.preserveScrollOnNextFocus && !self.c.Context().IsCurrent(self.Context)
+	self.preserveScrollOnNextFocus = false
+
 	// Doing this at the end of the layout function because we need the view to be
 	// resized before we focus the line, otherwise if we're in accordion mode
 	// the view could be squashed and won't know how to adjust the cursor/origin.
 	// Also, refreshing the viewport needs to happen after the view has been resized.
 	self.c.AfterLayout(func() error {
 		oldOrigin, _ := self.GetViewTrait().ViewPortYBounds()
+		view := self.Context.GetView()
+		var oldOriginX, oldOriginY int
+		if view != nil {
+			oldOriginX, oldOriginY = view.Origin()
+		}
 
 		self.GetViewTrait().FocusPoint(
 			self.ModelIndexToViewIndex(self.list.GetSelectedLineIdx()))
@@ -46,18 +56,30 @@ func (self *ListContextTrait) FocusLine() {
 			self.GetViewTrait().CancelRangeSelect()
 		}
 
+		if preserveScroll && view != nil {
+			view.SetOrigin(oldOriginX, oldOriginY)
+		}
+
 		if self.refreshViewportOnChange {
 			self.refreshViewport()
 		} else if self.renderOnlyVisibleLines {
-			newOrigin, _ := self.GetViewTrait().ViewPortYBounds()
-			if oldOrigin != newOrigin {
+			if preserveScroll {
 				self.HandleRender()
+			} else {
+				newOrigin, _ := self.GetViewTrait().ViewPortYBounds()
+				if oldOrigin != newOrigin {
+					self.HandleRender()
+				}
 			}
 		}
 		return nil
 	})
 
 	self.setFooter()
+}
+
+func (self *ListContextTrait) SetPreserveScrollOnNextFocus(value bool) {
+	self.preserveScrollOnNextFocus = value
 }
 
 func (self *ListContextTrait) refreshViewport() {

@@ -342,6 +342,18 @@ func (self *ViewDriver) SelectedLineIdx(expected int) *ViewDriver {
 	return self
 }
 
+func (self *ViewDriver) SetOriginY(value int) *ViewDriver {
+	view := self.getView()
+	originX, _ := view.Origin()
+	view.SetOrigin(originX, value)
+
+	return self
+}
+
+func (self *ViewDriver) OriginY() int {
+	return self.getView().OriginY()
+}
+
 // focus the view (assumes the view is a side-view)
 func (self *ViewDriver) Focus() *ViewDriver {
 	viewName := self.getView().Name()

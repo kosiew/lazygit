@@ -93,6 +93,10 @@ func (self *BackgroundRoutineMgr) startBackgroundFilesRefresh(refreshInterval in
 	self.gui.waitForIntro.Wait()
 
 	self.goEvery(time.Second*time.Duration(refreshInterval), self.gui.stopChan, func() error {
+		filesContext := self.gui.State.Contexts.Files
+		if filesContext != nil && !self.gui.State.ContextMgr.IsCurrent(filesContext) {
+			filesContext.SetPreserveScrollOnNextFocus(true)
+		}
 		self.gui.c.Refresh(types.RefreshOptions{Scope: []types.RefreshableView{types.FILES}})
 		return nil
 	})
