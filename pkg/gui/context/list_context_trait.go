@@ -86,14 +86,14 @@ func (self *ListContextTrait) FocusLine() {
 				view.SetCursor(oldCursorX, oldCursorY)
 				self.list.SetSelectedLineIdx(oldSelectedLineIdx)
 			} else if currentSelectedLineIdx >= 0 {
-				newCursorY := self.ModelIndexToViewIndex(currentSelectedLineIdx) - oldOriginY
-				if newCursorY < 0 {
-					newCursorY = 0
-				} else if _, viewHeight := view.Size(); viewHeight > 0 && newCursorY >= viewHeight {
-					newCursorY = viewHeight - 1
+				mappedViewIdx := self.ModelIndexToViewIndex(currentSelectedLineIdx)
+				_, viewHeight := view.Size()
+				if viewHeight > 0 && (mappedViewIdx < oldOriginY || mappedViewIdx >= oldOriginY+viewHeight) {
+					self.GetViewTrait().FocusPoint(mappedViewIdx)
+				} else {
+					newCursorY := mappedViewIdx - oldOriginY
+					view.SetCursor(oldCursorX, newCursorY)
 				}
-
-				view.SetCursor(oldCursorX, newCursorY)
 			} else {
 				view.SetCursor(oldCursorX, oldCursorY)
 			}
