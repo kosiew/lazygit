@@ -32,6 +32,7 @@ func (self *ListContextTrait) FocusLine() {
 
 	preserveScroll := self.preserveScrollOnNextFocus
 	self.preserveScrollOnNextFocus = false
+	shouldFocus := !preserveScroll
 
 	// Doing this at the end of the layout function because we need the view to be
 	// resized before we focus the line, otherwise if we're in accordion mode
@@ -41,12 +42,17 @@ func (self *ListContextTrait) FocusLine() {
 		oldOrigin, _ := self.GetViewTrait().ViewPortYBounds()
 		view := self.Context.GetView()
 		var oldOriginX, oldOriginY int
+		var oldCursorX, oldCursorY int
+		shouldRestoreCursor := preserveScroll && view != nil
 		if view != nil {
 			oldOriginX, oldOriginY = view.Origin()
+			oldCursorX, oldCursorY = view.Cursor()
 		}
 
-		self.GetViewTrait().FocusPoint(
-			self.ModelIndexToViewIndex(self.list.GetSelectedLineIdx()))
+		if shouldFocus {
+			self.GetViewTrait().FocusPoint(
+				self.ModelIndexToViewIndex(self.list.GetSelectedLineIdx()))
+		}
 
 		selectRangeIndex, isSelectingRange := self.list.GetRangeStartIdx()
 		if isSelectingRange {
@@ -72,6 +78,11 @@ func (self *ListContextTrait) FocusLine() {
 				}
 			}
 		}
+		if shouldRestoreCursor {
+			view.SetCursor(oldCursorX, oldCursorY)
+			self.list.SetSelectedLineIdx(self.ViewIndexToModelIndex(oldOriginY + oldCursorY))
+		}
+
 		return nil
 	})
 
