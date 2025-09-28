@@ -170,11 +170,45 @@ func (self *FileTreeViewModel) findNewSelectedIdx(prevNodes []*FileNode, currNod
 		return []string{node.path}
 	}
 
+	getSections := func(node *FileNode) map[FileSectionKind]struct{} {
+		sections := map[FileSectionKind]struct{}{}
+		if node == nil {
+			return sections
+		}
+
+		for _, kind := range fileSectionOrder {
+			if node.SomeFile(func(file *models.File) bool { return fileSectionForFile(file) == kind }) {
+				sections[kind] = struct{}{}
+			}
+		}
+
+		return sections
+	}
+
+	sectionsOverlap := func(a, b map[FileSectionKind]struct{}) bool {
+		if len(a) == 0 || len(b) == 0 {
+			return true
+		}
+
+		for kind := range a {
+			if _, ok := b[kind]; ok {
+				return true
+			}
+		}
+
+		return false
+	}
+
 	for _, prevNode := range prevNodes {
 		selectedPaths := getPaths(prevNode)
+		selectedSections := getSections(prevNode)
 
 		for idx, node := range currNodes {
 			paths := getPaths(node)
+			currSections := getSections(node)
+			if !sectionsOverlap(selectedSections, currSections) {
+				continue
+			}
 
 			// If you started off with a rename selected, and now it's broken in two, we want you to jump to the new file, not the old file.
 			// This is because the new should be in the same position as the rename was meaning less cursor jumping

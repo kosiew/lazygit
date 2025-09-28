@@ -70,6 +70,47 @@ func TestFileTreeViewModelSectionsFlatMode(t *testing.T) {
 	assert.Equal(t, 3, viewModel.Len())
 }
 
+func TestSelectionStaysInSameSectionAfterRefresh(t *testing.T) {
+	cmn := common.NewDummyCommon()
+	cmn.UserConfig().Gui.ShowRootItemInFileTree = false
+
+	files := []*models.File{
+		{Path: "dir/staged.txt", HasStagedChanges: true, Tracked: true},
+		{Path: "dir/unstaged.txt", HasUnstagedChanges: true, Tracked: true},
+	}
+
+	viewModel := NewFileTreeViewModel(func() []*models.File { return files }, cmn, true)
+	viewModel.SetTree()
+
+	allItems := viewModel.GetAllItems()
+	unstagedDirIdx := -1
+	for i, node := range allItems {
+		if node.GetPath() != "dir" {
+			continue
+		}
+
+		if node.SomeFile(func(file *models.File) bool { return fileSectionForFile(file) == FileSectionUnstaged }) {
+			unstagedDirIdx = i
+			break
+		}
+	}
+
+	if unstagedDirIdx == -1 {
+		t.Fatalf("failed to find unstaged directory entry")
+	}
+
+	viewModel.SetSelectedLineIdx(unstagedDirIdx)
+
+	viewModel.SetTree()
+
+	selected := viewModel.GetSelected()
+	if assert.NotNil(t, selected) {
+		assert.Equal(t, "dir", selected.GetPath())
+		assert.True(t, selected.SomeFile(func(file *models.File) bool { return fileSectionForFile(file) == FileSectionUnstaged }))
+		assert.False(t, selected.SomeFile(func(file *models.File) bool { return fileSectionForFile(file) == FileSectionStaged }))
+	}
+}
+
 func pathsFromNodes(nodes []*FileNode) []string {
 	result := make([]string, len(nodes))
 	for i, node := range nodes {
