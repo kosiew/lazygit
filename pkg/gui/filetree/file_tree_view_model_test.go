@@ -122,3 +122,45 @@ func pathsFromNodes(nodes []*FileNode) []string {
 	}
 	return result
 }
+
+func TestSelectionStaysOnFileWhenMovingBetweenSections(t *testing.T) {
+	cmn := common.NewDummyCommon()
+
+	files := []*models.File{
+		{Path: "file.txt", HasUnstagedChanges: true, Tracked: true},
+	}
+
+	viewModel := NewFileTreeViewModel(func() []*models.File { return files }, cmn, false)
+	viewModel.SetTree()
+
+	idx, found := viewModel.GetIndexForPath("file.txt")
+	if !found {
+		t.Fatalf("failed to find file in initial tree")
+	}
+
+	viewModel.SetSelectedLineIdx(idx)
+
+	if selected := viewModel.GetSelected(); assert.NotNil(t, selected) {
+		assert.Equal(t, "file.txt", selected.GetPath())
+	}
+
+	files[0].HasUnstagedChanges = false
+	files[0].HasStagedChanges = true
+
+	viewModel.SetTree()
+
+	if selected := viewModel.GetSelected(); assert.NotNil(t, selected) {
+		assert.Equal(t, "file.txt", selected.GetPath())
+		assert.True(t, selected.SomeFile(func(file *models.File) bool { return fileSectionForFile(file) == FileSectionStaged }))
+	}
+
+	files[0].HasStagedChanges = false
+	files[0].HasUnstagedChanges = true
+
+	viewModel.SetTree()
+
+	if selected := viewModel.GetSelected(); assert.NotNil(t, selected) {
+		assert.Equal(t, "file.txt", selected.GetPath())
+		assert.True(t, selected.SomeFile(func(file *models.File) bool { return fileSectionForFile(file) == FileSectionUnstaged }))
+	}
+}

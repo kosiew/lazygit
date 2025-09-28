@@ -199,23 +199,33 @@ func (self *FileTreeViewModel) findNewSelectedIdx(prevNodes []*FileNode, currNod
 		return false
 	}
 
-	for _, prevNode := range prevNodes {
-		selectedPaths := getPaths(prevNode)
-		selectedSections := getSections(prevNode)
+	enforceSectionOverlapOptions := []bool{true, false}
+	for _, enforceSectionOverlap := range enforceSectionOverlapOptions {
+		for _, prevNode := range prevNodes {
+			selectedPaths := getPaths(prevNode)
 
-		for idx, node := range currNodes {
-			paths := getPaths(node)
-			currSections := getSections(node)
-			if !sectionsOverlap(selectedSections, currSections) {
-				continue
+			var selectedSections map[FileSectionKind]struct{}
+			if enforceSectionOverlap {
+				selectedSections = getSections(prevNode)
 			}
 
-			// If you started off with a rename selected, and now it's broken in two, we want you to jump to the new file, not the old file.
-			// This is because the new should be in the same position as the rename was meaning less cursor jumping
-			foundOldFileInRename := prevNode.File != nil && prevNode.File.IsRename() && node.path == prevNode.File.PreviousPath
-			foundNode := utils.StringArraysOverlap(paths, selectedPaths) && !foundOldFileInRename
-			if foundNode {
-				return idx
+			for idx, node := range currNodes {
+				if enforceSectionOverlap {
+					currSections := getSections(node)
+					if !sectionsOverlap(selectedSections, currSections) {
+						continue
+					}
+				}
+
+				paths := getPaths(node)
+
+				// If you started off with a rename selected, and now it's broken in two, we want you to jump to the new file, not the old file.
+				// This is because the new should be in the same position as the rename was meaning less cursor jumping
+				foundOldFileInRename := prevNode.File != nil && prevNode.File.IsRename() && node.path == prevNode.File.PreviousPath
+				foundNode := utils.StringArraysOverlap(paths, selectedPaths) && !foundOldFileInRename
+				if foundNode {
+					return idx
+				}
 			}
 		}
 	}
