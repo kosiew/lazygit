@@ -196,6 +196,7 @@ var tests = []*components.IntegrationTest{
 	diff.IgnoreWhitespace,
 	diff.RenameSimilarityThresholdChange,
 	file.BackgroundRefreshPreservesScrollOffset,
+	file.BackgroundRefreshClampsOrigin,
 	file.CollapseExpand,
 	file.CopyMenu,
 	file.DirWithUntrackedFile,

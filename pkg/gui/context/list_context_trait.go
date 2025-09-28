@@ -43,10 +43,28 @@ func (self *ListContextTrait) FocusLine() {
 		view := self.Context.GetView()
 		var oldOriginX, oldOriginY int
 		var oldCursorX, oldCursorY int
+		preservedOriginY := oldOriginY
 		shouldRestoreCursor := preserveScroll && view != nil
 		if view != nil {
 			oldOriginX, oldOriginY = view.Origin()
 			oldCursorX, oldCursorY = view.Cursor()
+			preservedOriginY = oldOriginY
+
+			_, viewHeight := view.Size()
+			contentHeight := self.TotalContentHeight()
+			maxOriginY := contentHeight - viewHeight
+			if maxOriginY < 0 {
+				maxOriginY = 0
+			}
+			if preservedOriginY > maxOriginY {
+				preservedOriginY = maxOriginY
+			}
+			if preservedOriginY < 0 {
+				preservedOriginY = 0
+			}
+			if preservedOriginY != oldOriginY {
+				oldCursorY += oldOriginY - preservedOriginY
+			}
 		}
 
 		if shouldFocus {
@@ -63,7 +81,7 @@ func (self *ListContextTrait) FocusLine() {
 		}
 
 		if preserveScroll && view != nil {
-			view.SetOrigin(oldOriginX, oldOriginY)
+			view.SetOrigin(oldOriginX, preservedOriginY)
 		}
 
 		if self.refreshViewportOnChange {
@@ -79,7 +97,7 @@ func (self *ListContextTrait) FocusLine() {
 			}
 		}
 		if shouldRestoreCursor {
-			oldSelectedLineIdx := self.ViewIndexToModelIndex(oldOriginY + oldCursorY)
+			oldSelectedLineIdx := self.ViewIndexToModelIndex(preservedOriginY + oldCursorY)
 			currentSelectedLineIdx := self.list.GetSelectedLineIdx()
 
 			if currentSelectedLineIdx == oldSelectedLineIdx {
@@ -87,13 +105,13 @@ func (self *ListContextTrait) FocusLine() {
 				self.list.SetSelectedLineIdx(oldSelectedLineIdx)
 			} else if currentSelectedLineIdx >= 0 {
 				mappedViewIdx := self.ModelIndexToViewIndex(currentSelectedLineIdx)
-				newCursorY := mappedViewIdx - oldOriginY
+				newCursorY := mappedViewIdx - preservedOriginY
 
 				if preserveScroll {
 					view.SetCursor(oldCursorX, newCursorY)
 				} else {
 					_, viewHeight := view.Size()
-					if viewHeight > 0 && (mappedViewIdx < oldOriginY || mappedViewIdx >= oldOriginY+viewHeight) {
+					if viewHeight > 0 && (mappedViewIdx < preservedOriginY || mappedViewIdx >= preservedOriginY+viewHeight) {
 						self.GetViewTrait().FocusPoint(mappedViewIdx)
 					} else {
 						view.SetCursor(oldCursorX, newCursorY)
