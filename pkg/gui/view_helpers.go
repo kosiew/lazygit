@@ -136,7 +136,7 @@ func (gui *Gui) postRefreshUpdate(c types.Context) {
 	c.HandleRender()
 
 	if setter, ok := c.(interface{ SetPreserveScrollOnNextFocus(bool) }); ok {
-		shouldPreserveScroll := c.GetKey() == context.FILES_CONTEXT_KEY
+		shouldPreserveScroll := c.GetKey() == context.FILES_CONTEXT_KEY && !gui.State.ContextMgr.IsCurrent(c)
 		setter.SetPreserveScrollOnNextFocus(shouldPreserveScroll)
 	}
 
