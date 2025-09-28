@@ -36,6 +36,7 @@ var GitignoreSpecialCharacters = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			Focus().
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ?? !file"),
 				Equals("  ?? #file"),
@@ -56,6 +57,7 @@ var GitignoreSpecialCharacters = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Files().
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ?? .gitignore"),
 				Equals("  ?? abc_def"),

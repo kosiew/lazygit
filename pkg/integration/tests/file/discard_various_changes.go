@@ -24,6 +24,7 @@ var DiscardVariousChanges = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			TopLines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /").IsSelected(),
 			)
 

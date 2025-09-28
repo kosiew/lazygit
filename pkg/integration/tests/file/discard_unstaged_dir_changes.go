@@ -30,11 +30,15 @@ var DiscardUnstagedDirChanges = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /").IsSelected(),
+				Equals("  ▼ dir"),
+				Equals("    MM file-one"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
 				Equals("  ▼ dir"),
 				Equals("    ▼ subdir"),
 				Equals("      ?? unstaged-file-one"),
-				Equals("    MM file-one"),
 				Equals("    ?? unstaged-file-two"),
 				Equals("  ?? unstaged-file-three"),
 			).
@@ -47,10 +51,13 @@ var DiscardUnstagedDirChanges = NewIntegrationTest(NewIntegrationTestArgs{
 					Confirm()
 			}).
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir").IsSelected(),
 				Equals("    M  file-one"),
 				// this guy remains untouched because it wasn't inside the 'dir' directory
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
 				Equals("  ?? unstaged-file-three"),
 			)
 

@@ -21,6 +21,7 @@ var CollapseExpand = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  ▼ dir"),
 				Equals("    ?? file-one"),
@@ -31,12 +32,14 @@ var CollapseExpand = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			Press(keys.Files.CollapseAll).
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▶ /"),
 			)
 
 		t.Views().Files().
 			Press(keys.Files.ExpandAll).
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  ▼ dir"),
 				Equals("    ?? file-one"),

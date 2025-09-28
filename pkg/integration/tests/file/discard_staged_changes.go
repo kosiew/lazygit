@@ -24,18 +24,26 @@ var DiscardStagedChanges = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Unstaged changes ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("   M file2"),
-				Equals("  ?? file3"),
 				Equals("   M fileToRemove"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
+				Equals("  ?? file3"),
 			).
 			NavigateToLine(Contains(`fileToRemove`)).
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Staged changes ---"),
+				Equals("▼ /").IsSelected(),
+				Equals("  M  fileToRemove").IsSelected(),
+				Equals("--- Unstaged changes ---"),
 				Equals("▼ /"),
 				Equals("   M file2"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
 				Equals("  ?? file3"),
-				Equals("  M  fileToRemove").IsSelected(),
 			).
 			Press(keys.Files.ViewResetOptions)
 
@@ -44,8 +52,11 @@ var DiscardStagedChanges = NewIntegrationTest(NewIntegrationTestArgs{
 		// staged file has been removed
 		t.Views().Files().
 			Lines(
+				Equals("--- Unstaged changes ---"),
 				Equals("▼ /"),
 				Equals("   M file2"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
 				Equals("  ?? file3").IsSelected(),
 			)
 

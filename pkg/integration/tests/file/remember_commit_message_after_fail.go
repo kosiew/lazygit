@@ -31,9 +31,12 @@ var RememberCommitMessageAfterFail = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Staged changes ---"),
+				Equals("▼ /"),
+				Contains("one"),
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Contains("bad"),
-				Contains("one"),
 			).
 			Press(keys.Files.CommitChanges).
 			Tap(func() {
@@ -50,6 +53,8 @@ var RememberCommitMessageAfterFail = NewIntegrationTest(NewIntegrationTestArgs{
 					Confirm()
 			}).
 			Lines(
+				Equals("--- Staged changes ---"),
+				Equals("▼ /"),
 				Contains("one"),
 			).
 			Press(keys.Files.CommitChanges).

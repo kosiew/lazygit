@@ -26,6 +26,7 @@ var RenamedFiles = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir"),
 				Equals("    R  file1 → file1"),

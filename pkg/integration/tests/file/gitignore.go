@@ -20,6 +20,7 @@ var Gitignore = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  ?? .gitignore"),
 				Equals("  ?? toExclude"),

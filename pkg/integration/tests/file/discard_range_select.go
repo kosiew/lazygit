@@ -29,16 +29,21 @@ var DiscardRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Unstaged changes ---"),
 				Equals("▼ /").IsSelected(),
+				Equals("  ▼ dir2"),
+				Equals("     M file-2b"),
+				Equals("  ▼ dir3"),
+				Equals("     M file-3b"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-1a"),
 				Equals("    ?? file-1b"),
 				Equals("  ▼ dir2"),
 				Equals("    ?? file-2a"),
-				Equals("     M file-2b"),
 				Equals("  ▼ dir3"),
 				Equals("    ?? file-3a"),
-				Equals("     M file-3b"),
 				Equals("  ?? file-a"),
 				Equals("  ?? file-b"),
 			).
@@ -46,16 +51,21 @@ var DiscardRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Universal.ToggleRangeSelect).
 			NavigateToLine(Contains("file-2a")).
 			Lines(
+				Equals("--- Unstaged changes ---"),
+				Equals("▼ /"),
+				Equals("  ▼ dir2"),
+				Equals("     M file-2b"),
+				Equals("  ▼ dir3"),
+				Equals("     M file-3b"),
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-1a"),
 				Equals("    ?? file-1b").IsSelected(),
 				Equals("  ▼ dir2").IsSelected(),
 				Equals("    ?? file-2a").IsSelected(),
-				Equals("     M file-2b"),
 				Equals("  ▼ dir3"),
 				Equals("    ?? file-3a"),
-				Equals("     M file-3b"),
 				Equals("  ?? file-a"),
 				Equals("  ?? file-b"),
 			).
@@ -68,12 +78,16 @@ var DiscardRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 					Confirm()
 			}).
 			Lines(
+				Equals("--- Unstaged changes ---"),
+				Equals("▼ /"),
+				Equals("  ▼ dir3"),
+				Equals("     M file-3b"),
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-1a"),
 				Equals("  ▼ dir3").IsSelected(),
 				Equals("    ?? file-3a"),
-				Equals("     M file-3b"),
 				Equals("  ?? file-a"),
 				Equals("  ?? file-b"),
 			).
@@ -82,6 +96,10 @@ var DiscardRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Universal.ToggleRangeSelect).
 			NavigateToLine(Contains("file-a")).
 			Lines(
+				Equals("--- Unstaged changes ---"),
+				Equals("▼ /"),
+				Equals("  ▶ dir3"),
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-1a"),
@@ -97,6 +115,7 @@ var DiscardRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 					Confirm()
 			}).
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-1a"),

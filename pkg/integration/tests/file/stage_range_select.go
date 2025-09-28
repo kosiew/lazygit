@@ -26,13 +26,17 @@ var StageRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Unstaged changes ---"),
 				Equals("▼ /").IsSelected(),
+				Equals("  ▼ dir2"),
+				Equals("     M file-d"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-a"),
 				Equals("    ?? file-b"),
 				Equals("  ▼ dir2"),
 				Equals("    ?? file-c"),
-				Equals("     M file-d"),
 				Equals("  ?? file-e"),
 				Equals("  ?? file-f"),
 			).
@@ -42,27 +46,35 @@ var StageRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Stage
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
-				Equals("    ?? file-a"),
 				Equals("    A  file-b").IsSelected(),
 				Equals("  ▼ dir2").IsSelected(),
 				Equals("    A  file-c").IsSelected(),
 				// Staged because dir2 was part of the selection when he hit space
 				Equals("    M  file-d"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
+				Equals("  ▼ dir1"),
+				Equals("    ?? file-a"),
 				Equals("  ?? file-e"),
 				Equals("  ?? file-f"),
 			).
 			// Unstage; back to everything being unstaged
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Unstaged changes ---"),
+				Equals("▼ /"),
+				Equals("  ▼ dir2"),
+				Equals("     M file-d"),
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-a"),
 				Equals("    ?? file-b").IsSelected(),
 				Equals("  ▼ dir2").IsSelected(),
 				Equals("    ?? file-c").IsSelected(),
-				Equals("     M file-d"),
 				Equals("  ?? file-e"),
 				Equals("  ?? file-f"),
 			).
@@ -72,6 +84,10 @@ var StageRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Collapse the directory
 			PressEnter().
 			Lines(
+				Equals("--- Unstaged changes ---"),
+				Equals("▼ /"),
+				Equals("  ▶ dir2"),
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-a"),
@@ -85,12 +101,15 @@ var StageRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Stage
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Staged changes ---"),
+				Equals("▼ /"),
+				Equals("  ▶ dir2").IsSelected(),
+				Equals("  A  file-e").IsSelected(),
+				Equals("--- only untracked ---"),
 				Equals("▼ /"),
 				Equals("  ▼ dir1"),
 				Equals("    ?? file-a"),
 				Equals("    ?? file-b"),
-				Equals("  ▶ dir2").IsSelected(),
-				Equals("  A  file-e").IsSelected(),
 				Equals("  ?? file-f"),
 			).
 			Press(keys.Universal.ToggleRangeSelect).
@@ -98,14 +117,17 @@ var StageRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Expand the directory again to verify it's been staged
 			PressEnter().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
-				Equals("  ▼ dir1"),
-				Equals("    ?? file-a"),
-				Equals("    ?? file-b"),
 				Equals("  ▼ dir2").IsSelected(),
 				Equals("    A  file-c"),
 				Equals("    M  file-d"),
 				Equals("  A  file-e"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
+				Equals("  ▼ dir1"),
+				Equals("    ?? file-a"),
+				Equals("    ?? file-b"),
 				Equals("  ?? file-f"),
 			)
 	},

@@ -23,6 +23,7 @@ var StageDeletedRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Unstaged changes ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("   D file-a"),
 				Equals("   D file-b"),
@@ -31,8 +32,11 @@ var StageDeletedRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Stage a single deleted file
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  D  file-a").IsSelected(),
+				Equals("--- Unstaged changes ---"),
+				Equals("▼ /"),
 				Equals("   D file-b"),
 			).
 			Press(keys.Universal.ToggleRangeSelect).
@@ -40,6 +44,7 @@ var StageDeletedRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Stage both files while a deleted file is already staged
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  D  file-a").IsSelected(),
 				Equals("  D  file-b").IsSelected(),
@@ -47,6 +52,7 @@ var StageDeletedRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Unstage; back to everything being unstaged
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Unstaged changes ---"),
 				Equals("▼ /"),
 				Equals("   D file-a").IsSelected(),
 				Equals("   D file-b").IsSelected(),

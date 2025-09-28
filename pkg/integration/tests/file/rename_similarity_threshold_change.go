@@ -21,6 +21,7 @@ var RenameSimilarityThresholdChange = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  D  original"),
 				Equals("  A  renamed"),
@@ -30,6 +31,7 @@ var RenameSimilarityThresholdChange = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectToast(Equals("Changed rename similarity threshold to 45%"))
 			}).
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("R  original → renamed"),
 			).
 			Press(keys.Universal.FocusMainView).
@@ -39,6 +41,7 @@ var RenameSimilarityThresholdChange = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectToast(Equals("Changed rename similarity threshold to 50%"))
 			}).
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  D  original"),
 				Equals("  A  renamed"),

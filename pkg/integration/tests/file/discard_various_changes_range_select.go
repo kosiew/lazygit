@@ -19,6 +19,7 @@ var DiscardVariousChangesRangeSelect = NewIntegrationTest(NewIntegrationTestArgs
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  UA added-them-changed-us.txt"),
 				Equals("  AA both-added.txt"),
@@ -44,18 +45,23 @@ var DiscardVariousChangesRangeSelect = NewIntegrationTest(NewIntegrationTestArgs
 					Cancel()
 			}).
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  AM added-changed.txt"),
 				Equals("  MD change-delete.txt"),
 				Equals("  D  delete-change.txt"),
 				Equals("  D  deleted-staged.txt"),
-				Equals("   D deleted.txt"),
 				Equals("  MM double-modded.txt"),
 				Equals("  M  modded-staged.txt"),
-				Equals("   M modded.txt"),
 				Equals("  A  new-staged.txt"),
-				Equals("  ?? new.txt"),
 				Equals("  R  renamed.txt → renamed2.txt"),
+				Equals("--- Unstaged changes ---"),
+				Equals("▼ /"),
+				Equals("   D deleted.txt"),
+				Equals("   M modded.txt"),
+				Equals("--- only untracked ---"),
+				Equals("▼ /"),
+				Equals("  ?? new.txt"),
 			).
 			Press(keys.Universal.ToggleRangeSelect).
 			NavigateToLine(Contains("renamed.txt")).

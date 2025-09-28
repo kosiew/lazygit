@@ -21,6 +21,7 @@ var StageChildrenRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- only untracked ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  ▼ baz"),
 				Equals("    ?? file"),
@@ -35,6 +36,7 @@ var StageChildrenRangeSelect = NewIntegrationTest(NewIntegrationTestArgs{
 			// Stage
 			PressPrimaryAction().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  ▼ baz").IsSelected(),
 				Equals("    A  file").IsSelected(),

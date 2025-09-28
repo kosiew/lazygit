@@ -26,6 +26,7 @@ var DiscardUnstagedFileChanges = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /").IsSelected(),
 				Equals("  MM file-one"),
 				Equals("  AM file-two"),
@@ -39,12 +40,14 @@ var DiscardUnstagedFileChanges = NewIntegrationTest(NewIntegrationTestArgs{
 					Confirm()
 			}).
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  M  file-one").IsSelected(),
 				Equals("  AM file-two"),
 			).
 			SelectNextItem().
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  M  file-one"),
 				Equals("  AM file-two").IsSelected(),
@@ -57,6 +60,7 @@ var DiscardUnstagedFileChanges = NewIntegrationTest(NewIntegrationTestArgs{
 					Confirm()
 			}).
 			Lines(
+				Equals("--- Staged changes ---"),
 				Equals("▼ /"),
 				Equals("  M  file-one"),
 				Equals("  A  file-two").IsSelected(),
