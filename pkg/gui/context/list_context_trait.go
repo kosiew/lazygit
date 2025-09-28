@@ -50,7 +50,7 @@ func (self *ListContextTrait) FocusLine() {
 			oldCursorX, oldCursorY = view.Cursor()
 			preservedOriginY = oldOriginY
 
-			_, viewHeight := view.Size()
+			_, viewHeight := view.InnerSize()
 			contentHeight := self.TotalContentHeight()
 			maxOriginY := contentHeight - viewHeight
 			if maxOriginY < 0 {
